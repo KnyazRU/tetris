@@ -211,8 +211,8 @@ export default class Game {
                 else if (numberOfBlocks < columns) continue;
                 else if (numberOfBlocks === columns) lines.unshift(y);
         }
-        for (const index of lines) {
-            this.playfield.slice(lines, 1);
+        for (const line of lines) {
+            this.playfield.splice(line, 1);
             this.playfield.unshift(new Array(columns).fill(0));
         }
         return lines.length;
