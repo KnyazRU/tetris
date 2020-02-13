@@ -18,7 +18,7 @@ export default class Controller {
         else if (!this.isPlaying)
             this.view.renderPauseScreen();
                 else
-            this.view.renderMainScreen(state);
+                    this.view.renderMainScreen(state);
     }
 
     update() {
@@ -46,9 +46,7 @@ export default class Controller {
     startTimer() {
         const speed = 1000 - this.game.getState().level * 100;
         if (!this.intervalId) {
-            this.intervalId = setInterval(() => {
-                this.update();
-            }, speed>0 ? speed : 100);
+            this.intervalId = setInterval(() => this.update(), speed > 0 ? speed : 100);
         }
     }
 

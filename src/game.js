@@ -24,22 +24,9 @@ export default class Game {
     }
 
     getState() {
-        const playfield = this.createPlayfield();
-        const {x: pieceX, y: pieceY, bloks} = this.activePiece;
+        const playfield = this.playfield.map(arr => arr.slice()); // Копирование двумерного массива
 
-        for (let y = 0; y < this.playfield.length; y++) {
-            playfield[y] = [];
-            for (let x = 0; x < this.playfield[y].length; x++) {
-                playfield[y][x] = this.playfield[y][x];
-            }
-        }
-
-        for (let y = 0; y < bloks.length; y++) {
-            for (let x = 0; x < bloks[y].length; x++) {
-                if (bloks[y][x])
-                    playfield[pieceY + y][pieceX + x] = bloks[y][x];
-            }
-        }
+        this.lockPiece(playfield);
 
         return {
             score: this.score,
@@ -51,17 +38,17 @@ export default class Game {
         };
     }
 
-    createPlayfield() {
-        const playfield = [];
-        for (let y = 0; y < 20; y++) {
-            playfield[y] = [];
+    lockPiece(playfield) {
+        const {x: pieceX, y: pieceY, bloks} = this.activePiece;
 
-            for (let x = 0; x < 10; x++) {
-                playfield[y][x] = 0;
-            }
-        }
-        return playfield;
+        bloks.map((arr, y) => {
+            arr.map((el, x) => {
+                if (el) playfield[pieceY + y][pieceX + x] = el;
+            })
+        })
     }
+
+    createPlayfield = () => new Array(20).fill().map(() => new Array(10).fill(0)); // создание двумерного массива заполненного нулями
 
     createPiece() {
         const index = Math.floor(Math.random() * 7);
@@ -146,7 +133,7 @@ export default class Game {
         this.activePiece.y += 1;
         if (this.hasCollision()) {
             this.activePiece.y -= 1;
-            this.lockPiece();
+            this.lockPiece(this.playfield);
             const clearedLines = this.clearLines();
             this.updateScore(clearedLines);
             this.updatePieces();
@@ -158,10 +145,8 @@ export default class Game {
     rotatePiece() {
         const bloks = this.activePiece.bloks;
         const length = bloks.length;
-        const temp = [];
-        for (let i = 0; i < length; i++) {
-            temp[i] = new Array(length).fill(0);
-        }
+        const temp =  new Array(length).fill().map(() => new Array(length).fill(0));
+
         for (let y = 0; y < length; y++) {
             for (let x = 0; x < length; x++) {
                 temp[x][y] = bloks[length-1-y][x];
@@ -187,34 +172,19 @@ export default class Game {
         return false;
     }
 
-    lockPiece() {
-        const {x: pieceX, y: pieceY, bloks} = this.activePiece;
-        for (let y = 0; y < bloks.length; y++) {
-            for (let x = 0; x < bloks[y].length; x++) {
-                if (bloks[y][x])
-                    this.playfield[pieceY + y][pieceX + x] = bloks[y][x];
-            }
-        }
-    }
+
 
     clearLines() {
         const rows = 20;
         const columns = 10;
         let lines = [];
         for (let y = rows -1; y >= 0; y--) {
-            let numberOfBlocks = 0;
-            for (let x = 0; x < columns; x++) {
-                if (this.playfield[y][x])
-                    numberOfBlocks +=1;
-            }
-            if (numberOfBlocks === 0) break;
-                else if (numberOfBlocks < columns) continue;
-                else if (numberOfBlocks === columns) lines.unshift(y);
+            if (this.playfield[y].every(el => el !== 0)) lines.unshift(y);
         }
-        for (const line of lines) {
-            this.playfield.splice(line, 1);
+        lines.forEach(el => {
+            this.playfield.splice(el, 1);
             this.playfield.unshift(new Array(columns).fill(0));
-        }
+        })
         return lines.length;
     }
 
