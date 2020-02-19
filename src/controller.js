@@ -17,8 +17,8 @@ export default class Controller {
             this.view.renderGameOver(state);
         else if (!this.isPlaying)
             this.view.renderPauseScreen();
-                else
-                    this.view.renderMainScreen(state);
+        else
+            this.view.renderMainScreen(state);
     }
 
     update() {
@@ -60,7 +60,7 @@ export default class Controller {
     handleKeyDown(event) {
         const state = this.game.getState();
 
-        switch(event.keyCode) {
+        switch (event.keyCode) {
             case 13: // ENTER
                 if (state.isGameOver)
                     this.reset();
