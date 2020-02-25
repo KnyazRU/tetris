@@ -14,7 +14,7 @@ export default class Game {
         this.score = 0;
         this.lines = 0;
         this.topOut = false;
-        this.playfield = this.createPlayfield();
+        this.playfield = this.createPlayfield(20, 10);
         this.activePiece = this.createPiece();
         this.nextPiece = this.createPiece();
     }
@@ -48,7 +48,7 @@ export default class Game {
         })
     }
 
-    createPlayfield = () => new Array(20).fill().map(() => new Array(10).fill(0)); // создание двумерного массива заполненного нулями
+    createPlayfield = (x = 20, y = 10) => new Array(x).fill().map(() => new Array(y).fill(0)); // создание двумерного массива заполненного нулями
 
     createPiece() {
         const index = Math.floor(Math.random() * 7);
@@ -145,7 +145,7 @@ export default class Game {
     rotatePiece() {
         const bloks = this.activePiece.bloks;
         const length = bloks.length;
-        const temp =  new Array(length).fill().map(() => new Array(length).fill(0));
+        const temp =  this.createPlayfield(length, length);
 
         for (let y = 0; y < length; y++) {
             for (let x = 0; x < length; x++) {
@@ -162,24 +162,19 @@ export default class Game {
         const {x: pieceX, y: pieceY, bloks} = this.activePiece;
         for (let y = 0; y < bloks.length; y++) {
             for (let x = 0; x < bloks[y].length; x++) {
-                if (bloks[y][x] &&
-                    ((playfield[pieceY + y] === undefined || playfield[pieceY + y][pieceX + x] === undefined) ||
-                    playfield[pieceY + y][pieceX + x])
-                    )
+                if (bloks[y][x] && ((playfield[pieceY + y] === undefined || playfield[pieceY + y][pieceX + x] === undefined) || playfield[pieceY + y][pieceX + x]))
                     return true;
             }
         }
         return false;
     }
 
-
-
     clearLines() {
         const rows = 20;
         const columns = 10;
         let lines = [];
         for (let y = rows -1; y >= 0; y--) {
-            if (this.playfield[y].every(el => el !== 0)) lines.unshift(y);
+            if (!this.playfield[y].includes(0)) lines.unshift(y);
         }
         lines.forEach(el => {
             this.playfield.splice(el, 1);
