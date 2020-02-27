@@ -6,6 +6,7 @@ export default class Controller {
         this.isPlaying = false;
 
         document.addEventListener('keydown', this.handleKeyDown.bind(this));
+        document.addEventListener('keyup', this.handleKeyUp.bind(this));
 
         this.view.renderStartScreen();
     }
@@ -59,7 +60,6 @@ export default class Controller {
 
     handleKeyDown(event) {
         const state = this.game.getState();
-
         switch (event.keyCode) {
             case 13: // ENTER
                 if (state.isGameOver)
@@ -69,26 +69,33 @@ export default class Controller {
                 else
                     this.play();
                 break;
-
             case 37: // left arrow
+                if (!this.isPlaying) break;
                 this.game.movePieceLeft();
                 this.updateView();
                 break;
-
             case 38: // UP arrow
+                if (!this.isPlaying) break;
                 this.game.rotatePiece();
                 this.updateView();
                 break;
-
             case 39: // right arrow
+                if (!this.isPlaying) break;
                 this.game.movePieceRight();
                 this.updateView();
                 break;
-
             case 40: // down arrow
+                if (!this.isPlaying) break;
+                this.stopTimer();
                 this.game.movePieceDown();
                 this.updateView();
                 break;
+        }
+    }
+
+    handleKeyUp(event) {
+        if (event.keyCode === 40 && this.isPlaying) {
+            this.startTimer();
         }
     }
 }
